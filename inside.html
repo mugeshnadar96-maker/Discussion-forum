@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Start a Discussion</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        color: white;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      .discussion-container {
+        background-color: #222;
+        padding: 30px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 800px;
+        box-shadow: 0px 0px 10px rgba(255, 145, 77, 0.5);
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: none;
+        border-radius: 5px;
+        background: #333;
+        color: white;
+        font-size: 16px;
+      }
+
+      textarea {
+        resize: none;
+        height: 100px;
+      }
+
+      .submit-btn {
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        background-color: #ff914d;
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .submit-btn:hover {
+        background-color: #e67e22;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="discussion-container">
+      <h2>Start a Discussion</h2>
+      <form action="submit_discussion.php" method="POST">
+        <label for="discussionTitle">Title</label>
+        <input
+          type="text"
+          id="discussionTitle"
+          name="title"
+          placeholder="Enter a title..."
+          required
+        />
+
+        <label for="discussionTag">Tag</label>
+        <select id="discussionTag" name="tag">
+          <option value="programming">Programming</option>
+          <option value="security">Security</option>
+          <option value="electronics">Electronics & IoT</option>
+          <option value="general">General</option>
+          <option value="help">Help</option>
+        </select>
+
+        <label for="discussionQuestion">Question</label>
+        <textarea
+          id="discussionQuestion"
+          name="question"
+          placeholder="Enter your question..."
+          required
+        ></textarea>
+
+        <label for="discussionDetails">Additional Details</label>
+        <textarea
+          id="discussionDetails"
+          name="details"
+          placeholder="Provide more details..."
+        ></textarea>
+
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </div>
+  </body>
+</html>

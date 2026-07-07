@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  
+<link
+href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+rel="stylesheet"
+/>
+<link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+  <head>
+    <meta charset="UTF-8" />
+    <title>Enter OTP</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+                color: white;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #000012;
+      }
+      .box {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 40px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        width: 410px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      .box img {
+      display: block;
+      margin: 0 auto 10px;
+      width: 50px;
+      height: 50px;
+    }
+    .box h2 {
+      font-size: 27px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      /* word-spacing: 5px; */
+      text-align: center;
+    }
+    .box p {
+      color: #d1d5db;
+      margin-bottom: 16px;
+    }
+      input {
+        justify-content: center;
+        text-align: center;
+        width: 360px;
+        padding: 12px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 50px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 16px;
+      }
+      input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      button {
+        background: #ff8200;
+        color: white;
+        border-radius: 50px;
+        padding: 12px;
+        border: none;
+        width: 360px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #e67300;
+      }
+      h2 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      p {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #cccccc;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+     
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <form method="post" action="http://localhost:5502/verify-otp.html">
+        <img src="https://img.icons8.com/?size=100&id=h4M5xzzhJIlG&format=png&color=FFFFFF" width="50" height="30"class="mx-auto mb-1" />
+       
+      <h2>OTP  Verification</h2>
+      <p>
+        One Time Password (OTP) has been sent via email.<br>
+        Enter the OTP below to verify it.
+      <input
+        id="otp"
+        name="otpsend"
+        type="text"
+        placeholder="6-digit OTP"
+        required
+      />
+      <button>Verify</button>
+      <p id="message"></p>
+    </div>
+    </form>
+    
+
+    <script>
+      // function verifyOTP() {
+      //   const otp = document.getElementById("otp").value;
+      //   const username = localStorage.getItem("username"); // Retrieve username from localStorage
+
+      //   if (!username) {
+      //     document.getElementById("message").textContent =
+      //       "Username not found. Please log in again.";
+      //     return;
+      //   }
+
+      //   fetch("/verify-otp", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ username, otp }),
+      //   })
+      //     .then((res) => res.json())
+      //     .then((data) => {
+      //       if (data.success) {
+      //         window.location.href = "inside2.html"; // Redirect on success
+      //       } else {
+      //         document.getElementById("message").textContent = data.message; // Show error message
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       document.getElementById("message").textContent =
+      //         "An error occurred. Please try again.";
+      //       console.error("Error:", error);
+      //     });
+      // }
+    </script>
+  </body>
+</html>

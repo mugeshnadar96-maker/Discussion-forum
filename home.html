@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIES Discussion</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background-color: #000012;
+        color: white;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+        transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out,
+          filter 0.8s ease-in-out;
+      }
+
+      #canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Behind content */
+      }
+
+      .container {
+        z-index: 2;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+      }
+
+      .title {
+        font-size: 50px;
+      }
+
+      .highlight {
+        color: #ff8200;
+        font-weight: 700;
+        display: inline-block;
+        transition: opacity 0.5s ease-in-out;
+      }
+
+      .btn {
+        display: inline-block;
+        background: #ff8200;
+        color: white;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 20px;
+        transition: 0.3s;
+      }
+
+      .btn:hover {
+        background: darkorange;
+        transform: scale(1.1);
+      }
+
+      h2 {
+        font-size: 45px;
+      }
+
+      /* Page transition effect */
+      .fade-out {
+        opacity: 0;
+        transform: scale(0.9);
+        filter: blur(10px);
+        pointer-events: none;
+      }
+
+      /* Additional hover animation */
+      .btn:active {
+        transform: scale(0.95);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas-container"></div>
+    <!-- Three.js Background -->
+
+    <div class="container">
+      <div class="logo">
+        <h2>Discussion <span class="highlight">Forum</span></h2>
+      </div>
+      <h1 class="title">
+        Unleash your
+        <span class="highlight" id="changing-word">programming</span> potential!
+      </h1>
+      <a href="login.html" class="btn" id="login-btn"
+        >🔗 Log in to our discussion</a
+      >
+    </div>
+
+    <script>
+      // Word Transition Logic
+      const words = ["programming", "algorithm", "knowledge", "creativity"];
+      let index = 0;
+      const wordElement = document.getElementById("changing-word");
+
+      function changeWord() {
+        wordElement.style.opacity = 0; // Fade out
+        setTimeout(() => {
+          index = (index + 1) % words.length;
+          wordElement.textContent = words[index];
+          wordElement.style.opacity = 1; // Fade in
+        }, 500);
+      }
+
+      setInterval(changeWord, 2000); // Change every 2 seconds
+
+      // Page transition effect
+      document
+        .getElementById("login-btn")
+        .addEventListener("click", function (event) {
+          event.preventDefault(); // Prevent immediate navigation
+          document.body.classList.add("fade-out"); // Apply fade-out effect
+          setTimeout(() => {
+            window.location.href = this.href; // Redirect after fade-out
+          }, 800); // Match the transition duration
+        });
+
+      // THREE.JS BACKGROUND ANIMATION
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer({ alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document
+        .getElementById("canvas-container")
+        .appendChild(renderer.domElement);
+
+      // Particles Setup
+      const particleCount = 300;
+      const particles = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+
+      for (let i = 0; i < particleCount * 3; i++) {
+        positions[i] = (Math.random() - 0.5) * 10;
+      }
+
+      particles.setAttribute(
+        "position",
+        new THREE.BufferAttribute(positions, 3)
+      );
+
+      const particleMaterial = new THREE.PointsMaterial({
+        color: 0xff9900,
+        size: 0.05,
+      });
+      const particleSystem = new THREE.Points(particles, particleMaterial);
+      scene.add(particleSystem);
+
+      camera.position.z = 5;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        particleSystem.rotation.y += 0.001;
+        particleSystem.rotation.x += 0.0005;
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      // Responsive Adjustments
+      window.addEventListener("resize", () => {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+    </script>
+  </body>
+</html>

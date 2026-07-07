@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidebar Menu</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css"
+    />
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background-color: #000012;
+        color: white;
+        display: flex;
+        flex-direction: column;
+      }
+      .navbar {
+        width: 100%;
+        background: #000012;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        height: 50px;
+        padding-left: 3%;
+      }
+      .navbar .left-section {
+        display: flex;
+        align-items: center;
+      }
+      .navbar .logo {
+        font-size: 25px;
+        font-weight: bold;
+        color: orange;
+        margin-right: 20px;
+      }
+      .navbar ul {
+        list-style: none;
+        display: flex;
+        padding: 0;
+        margin: 0;
+      }
+      .navbar ul li {
+        margin: 0 15px;
+      }
+      .navbar ul li a {
+        text-decoration: none;
+        color: white;
+        font-size: 16px;
+      }
+      .navbar ul li a:hover {
+        color: #ff914d;
+      }
+      .search-bar {
+        display: flex;
+        align-items: center;
+        background: #222;
+        border-radius: 20px;
+        padding: 5px 10px;
+        padding-right: 32px;
+      }
+      .search-bar input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: white;
+        width: 200px;
+        padding: 5px;
+      }
+      .search-bar i {
+        color: #ff914d;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        padding-right: 7%;
+        font-size: 20px;
+      }
+      .user-info i {
+        margin-right: 5px;
+        color: #ff914d;
+      }
+      #bell {
+        font-size: 20px;
+        padding-right: 30px;
+      }
+      .header-banner {
+        margin-top: 50px;
+        width: 100%;
+        height: 200px;
+        background: #ff914d;
+        text-align: center;
+        color: #222;
+        font-size: 24px;
+        font-weight: bold;
+        display: block;
+        align-items: center;
+        justify-content: center; /* Center text horizontally */
+        text-align: center;
+      }
+      .banner-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 50px;
+        font-size: 45px;
+        padding-left: 10px;
+        font-family: "Poppins", sans-serif;
+      }
+      .sidebar {
+        width: 240px;
+        height: calc(100vh - 250px);
+        background: #000012;
+        padding: 20px;
+        position: fixed;
+        top: 275px;
+        left: 0;
+        padding-left: 3%;
+      }
+      .sidebar button {
+        width: 100%;
+        background: #ff914d;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        border-radius: 10px;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+      }
+      .sidebar ul li {
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .sidebar ul li i {
+        margin-right: 10px;
+        color: #ff914d;
+      }
+      .sidebar ul li:hover {
+        color: #ff914d;
+        transform: translateX(20px);
+      }
+      .content {
+        margin-left: 260px;
+        padding: 20px;
+        margin-top: 150px;
+      }
+      /* Styles from view_questions.html */
+      .question-card {
+        background-color: black;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        /* box-shadow: 0px 0px 10px gray; */
+        transition: all 0.3s ease;
+        overflow: hidden;
+        width: 95%;
+        margin-left: 80px;
+        margin-top: 0%;
+        background-color: rgb(23, 31, 31);
+      }
+      .question-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 5px 15px grey;
+      }
+      .question-header {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        border-bottom: 1px solid #333;
+      }
+      .question-title {
+        color: white;
+        font-size: 20px;
+        margin: 0;
+        flex-grow: 1;
+      }
+      .question-tag {
+        background-color: rgb(190, 109, 71);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 14px;
+        margin: 0 15px;
+      }
+      .question-content {
+        display: none;
+        padding: 20px;
+      }
+      .question-content.expanded {
+        display: block;
+      }
+      .code-block {
+        background-color: #333;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+      .code-block pre {
+        margin: 0;
+        white-space: pre-wrap;
+      }
+      .answers-section {
+        margin-top: 20px;
+        border-top: 1px solid #333;
+        padding-top: 20px;
+      }
+      .answer-form {
+        margin-top: 20px;
+        background-color: #333;
+        padding: 20px;
+        border-radius: 5px;
+      }
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #444;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        min-height: 100px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+      }
+      .submit-btn {
+        background-color: #ff914d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .submit-btn:hover {
+        background-color: #e67e22;
+      }
+      .answer-card {
+        background-color: #333;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+      }
+      .timestamp {
+        color: #888;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .label-container {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+      }
+      .toggle-btn {
+        padding: 5px 10px;
+        font-size: 14px;
+        background: #ff914d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+      }
+      .toggle-btn:hover {
+        background: #e67e22;
+      }
+      .code-editor-container {
+        margin-top: 10px;
+      }
+      .CodeMirror {
+        height: 150px;
+        border-radius: 5px;
+        background: #333;
+        color: white;
+        font-size: 14px;
+        border: 1px solid #444;
+      }
+      .expand-icon {
+        font-size: 24px;
+        color: #ff914d;
+        transition: transform 0.3s ease;
+      }
+      .expand-icon.expanded {
+        transform: rotate(180deg);
+      }
+      .response-count {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #ff914d;
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        background-color: rgba(255, 145, 77, 0.1);
+        margin-right: 10px;
+      }
+      .response-count i {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="left-section">
+        <div class="logo">SIES DISCUSSION</div>
+        <ul>
+          <li><a href="#">Forum Rules</a></li>
+          <li><a href="#">How to ask</a></li>
+          <li><a href="#">Formatting Posts</a></li>
+        </ul>
+      </div>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search discussions..." />
+      </div>
+      <div class="user-info">
+        <i class="fas fa-bell" id="bell"></i>
+        <i class="fas fa-user-circle"></i>
+        <span>Admin</span>
+      </div>
+    </div>
+    <div class="header-banner">
+      <div class="banner-title">
+        <i class="fas fa-desktop"></i>
+        <span>Programming</span>
+      </div>
+
+      <p>All programming-related queries fall in this tag.</p>
+    </div>
+    <div class="sidebar">
+      <a href="ask_a_ques.html">
+        <button>Start a Discussion</button>
+      </a>
+      <ul>
+        <li>
+          <i class="fas fa-comments" style="color: white"></i> All Discussions
+        </li>
+        <li>
+          <i class="fas fa-users" style="color: burlywood"></i> User Directory
+        </li>
+        <li>
+          <i class="fas fa-lock" style="color: brown"></i> Private Discussions
+        </li>
+        <li><i class="fas fa-star"></i> Following</li>
+        <li><i class="fas fa-tags" style="color: white"></i> Tags</li>
+        <li>
+          <i class="fas fa-envelope" style="color: greenyellow"></i> Requests
+        </li>
+        <li><i class="fas fa-code"></i> Programming</li>
+        <li><i class="fas fa-shield-alt"></i> Security</li>
+        <li>
+          <i class="fas fa-microchip" style="color: blue"></i> Electronics & IoT
+        </li>
+        <li>
+          <i class="fas fa-comments" style="color: lightgreen"></i> General
+        </li>
+        <li><i class="fas fa-question-circle"></i> Help</li>
+        <li><i class="fas fa-check-circle" style="color: cyan"></i> Solved</li>
+      </ul>
+    </div>
+    <div class="content">
+      <div class="container">
+        <!-- <h1>Discussion Forum</h1> -->
+        <div id="questions-container"></div>
+      </div>
+    </div>
+    <script>
+      const socket = io("http://localhost:3000");
+      let codeEditors = {};
+
+      function createQuestionCard(question) {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        const answerCount = question.answers ? question.answers.length : 0;
+        card.innerHTML = `
+                <div class="question-header">
+                    <h2 class="question-title">${question.title}</h2>
+                    <div class="question-tag">${question.tag}</div>
+                    <div class="response-count">
+                        <i class="fas fa-comments"></i>
+                        ${answerCount}
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="question-content">
+                    <div class="question-text">${question.question}</div>
+                    ${
+                      question.code
+                        ? `<div class="code-block"><pre><code>${question.code}</code></pre></div>`
+                        : ""
+                    }
+                    <div class="answers-section">
+                        <h3>Answers (${answerCount})</h3>
+                        <div id="answers-${question._id}"></div>
+                        <div class="answer-form">
+                            <textarea id="answer-text-${
+                              question._id
+                            }" placeholder="Your answer..."></textarea>
+                            <div class="label-container">
+                                <label>Code (Optional)</label>
+                                <button type="button" class="toggle-btn" onclick="toggleCodeEditor('${
+                                  question._id
+                                }')">+</button>
+                            </div>
+                            <div class="code-editor-container" id="code-editor-${
+                              question._id
+                            }" style="display: none;">
+                                <textarea id="answer-code-${
+                                  question._id
+                                }"></textarea>
+                            </div>
+                            <button class="submit-btn" onclick="submitAnswer('${
+                              question._id
+                            }')">Submit Answer</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        const header = card.querySelector(".question-header");
+        header.addEventListener("click", (e) => {
+          if (e.target.closest(".answer-form")) return;
+          const content = card.querySelector(".question-content");
+          const icon = card.querySelector(".expand-icon");
+          content.classList.toggle("expanded");
+          icon.classList.toggle("expanded");
+        });
+
+        return card;
+      }
+
+      function toggleCodeEditor(questionId) {
+        event.stopPropagation();
+        const editorContainer = document.getElementById(
+          `code-editor-${questionId}`
+        );
+        editorContainer.style.display =
+          editorContainer.style.display === "block" ? "none" : "block";
+
+        if (!codeEditors[questionId]) {
+          codeEditors[questionId] = CodeMirror.fromTextArea(
+            document.getElementById(`answer-code-${questionId}`),
+            { mode: "javascript", theme: "default", lineNumbers: true }
+          );
+        }
+      }
+
+      function submitAnswer(questionId) {
+        event.stopPropagation();
+        const answerText = document.getElementById(
+          `answer-text-${questionId}`
+        ).value;
+        const answerCode = codeEditors[questionId]
+          ? codeEditors[questionId].getValue()
+          : "";
+
+        if (answerText) {
+          socket.emit("submitAnswer", {
+            questionId: questionId,
+            answer: answerText,
+            code: answerCode,
+          });
+
+          document.getElementById(`answer-text-${questionId}`).value = "";
+          if (codeEditors[questionId]) {
+            codeEditors[questionId].setValue("");
+          }
+        }
+      }
+
+      socket.on("connect", () => {
+        console.log("Connected to server");
+        socket.emit("getQuestions");
+      });
+
+      socket.on("questionsList", (questions) => {
+        const container = document.getElementById("questions-container");
+        container.innerHTML = "";
+        questions.forEach((question) => {
+          container.appendChild(createQuestionCard(question));
+          const answersContainer = document.getElementById(
+            `answers-${question._id}`
+          );
+          question.answers.forEach((answer) => {
+            const answerElement = document.createElement("div");
+            answerElement.className = "answer-card";
+            answerElement.innerHTML = `
+                        <div>${answer.text}</div>
+                        ${
+                          answer.code
+                            ? `<div class="code-block"><pre><code>${answer.code}</code></pre></div>`
+                            : ""
+                        }
+                        <div class="timestamp">${new Date(
+                          answer.timestamp
+                        ).toLocaleString()}</div>
+                    `;
+            answersContainer.appendChild(answerElement);
+          });
+        });
+      });
+
+      socket.on("newAnswer", (data) => {
+        const answersContainer = document.getElementById(
+          `answers-${data.questionId}`
+        );
+        const answerElement = document.createElement("div");
+        answerElement.className = "answer-card";
+        answerElement.innerHTML = `
+                <div>${data.answer.text}</div>
+                ${
+                  data.answer.code
+                    ? `<div class="code-block"><pre><code>${data.answer.code}</code></pre></div>`
+                    : ""
+                }
+                <div class="timestamp">${new Date(
+                  data.answer.timestamp
+                ).toLocaleString()}</div>
+            `;
+        answersContainer.appendChild(answerElement);
+      });
+    </script>
+  </body>
+</html>

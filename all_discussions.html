@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidebar Menu</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css"
+    />
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: #000012;
+      }
+      .navbar {
+        width: 100%;
+        background: #000012;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        height: 50px;
+        padding-left: 3%;
+        font-family: "Poppins", sans-serif;
+      }
+      .navbar .left-section {
+        display: flex;
+        align-items: center;
+      }
+      .navbar .logo {
+        font-size: 25px;
+        font-weight: bold;
+        color: orange;
+        margin-right: 20px;
+      }
+      .navbar ul {
+        list-style: none;
+        display: flex;
+        padding: 0;
+        margin: 0;
+      }
+      .navbar ul li {
+        margin: 0 15px;
+      }
+      .navbar ul li a {
+        text-decoration: none;
+        color: white;
+        font-size: 16px;
+      }
+      .navbar ul li a:hover {
+        color: #ff914d;
+      }
+      .search-bar {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 5px 10px;
+        padding-right: 26px;
+        width: 300px;
+      }
+      .search-bar input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: white;
+        width: 200px;
+        padding: 5px;
+      }
+      .search-bar i {
+        color: #ff914d;
+      }
+      .user-info {
+        display: flex;
+        align-items: center;
+        padding-right: 6%;
+        font-size: 20px;
+        padding-left: 0px;
+        text-align: center;
+      }
+      .user-info i {
+        margin-right: 5px;
+        color: #ff914d;
+        font-size: 20px;
+        padding-right: 2px;
+      }
+      #bell {
+        font-size: 20px;
+        padding-right: 40px;
+      }
+
+      .top-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0px;
+        padding-left: 200px;
+        padding-top: 70px;
+        padding-right: 710px;
+      }
+      .header-banner {
+        margin-top: 70px;
+        width: 100%;
+        height: 170px;
+        background: #ff914d;
+        text-align: center;
+        color: #222;
+        font-size: 24px;
+        font-weight: bold;
+        display: block;
+        align-items: center;
+        justify-content: center; /* Center text horizontally */
+        text-align: center;
+      }
+      .banner-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 60px;
+        font-size: 45px;
+        padding-left: 10px;
+        font-family: "Poppins", sans-serif;
+        padding-top: 20px;
+      }
+      #fa-desktop {
+        padding-right: 10px;
+      }
+
+      .start-discussion {
+        background: #ff8c42;
+        color: black;
+        border: none;
+        padding: 0px 0px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 0px;
+        size: 50px;
+        text-align: center;
+        width: 200px;
+        font-weight: 600;
+        font-family: "Poppins", sans-serif;
+      }
+
+      .nav-links a {
+        color: #fff;
+        text-decoration: none;
+        margin-left: 20px;
+        font-size: 15px;
+        opacity: 0.7;
+      }
+      a.active {
+        opacity: 1;
+        color: #ff8c42;
+       
+        
+      }
+
+      .nav-links a:hover {
+        opacity: 1;
+        color: #ff8c42;
+      }
+      .nav-links a i {
+        margin-right: 5px;
+      }
+
+      .sidebar {
+        width: 250px;
+        height: calc(100vh - 300px); /* Adjust height based on top position */
+        background: #000012;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding-top: 50px;
+        position: fixed;
+        top: 240px;
+        left: 40px;
+        overflow-y: auto; /* Add scrolling if needed */
+      }
+
+      .nav-items {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* Reduced gap */
+        padding-bottom: 20px; /* Add padding at bottom */
+      }
+      .start-discussion {
+        background: #ff914d;
+        color: black;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+        width: 90%;
+      }
+
+      .follow-btn {
+        background: #2d3245;
+        color: #8b8fa3;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        width: 90%;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      .nav-items {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .nav-item {
+        color: #8b8fa3;
+        text-decoration: none;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px; /* Reduced from 10px */
+        padding: 7px;
+        border-radius: 4px;
+        transition: color 0.3s;
+      }
+
+      .nav-item:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-item i {
+        width: 20px;
+        text-align: center;
+      }
+
+      .sub-item {
+        padding-left: 35px;
+        color: #ff6b6b;
+        transition: all 0.3s ease;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease-out;
+        visibility: hidden;
+        margin: 0;
+        padding: 0;
+      }
+
+      .sub-item.show {
+        opacity: 1;
+        max-height: 40px;
+        visibility: visible;
+        margin: 0;
+        padding: 4px 0 4px 35px;
+      }
+
+      .nav-items {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-bottom: 10px;
+      }
+      .category-computers i {
+        color: #ff6b6b;
+      }
+
+      /* Custom colors for specific items */
+      .nav-item:nth-child(6) i {
+        /* Academy */
+        color: #ff8c42;
+      }
+
+      .nav-item:nth-child(7)  i{
+        /* Requests */
+        color: #ff6b6b;
+      }
+
+      .nav-item:nth-child(11) i {
+        /* Electronics */
+        color: #ff6b6b;
+      }
+
+      .nav-item:nth-child(12) i{
+        /* General */
+        color: #00b894;
+      }
+
+      .nav-item:nth-child(13) i{
+        /* Meta */
+        color: #00cec9;
+      }
+
+      .nav-item:nth-child(15) i {
+        /* Help */
+        color: greenyellow;
+      }
+
+      .nav-item:nth-child(16) i{
+        /* Peer Support */
+        color: #ff6b6b;
+      }
+
+      .nav-item:last-child  i{
+        /* Unanswered */
+        color: #ff6b6b;
+      }
+      .category-academy i {
+        color: #ff8c42;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .sub-item-academy {
+        padding-left: 35px;
+        color: #ff8c42;
+        transition: all 0.3s ease;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease-out;
+        visibility: hidden;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        top: -4px; /* Pull items up slightly */
+      }
+
+      .sub-item-academy.show {
+        opacity: 1;
+        max-height: 40px;
+        visibility: visible;
+        margin: 2px 0;
+        padding: 4px 0 4px 35px;
+      }
+      .sub-item {
+        padding-left: 35px;
+        color: #ff6b6b;
+        transition: all 0.3s ease;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease-out;
+        visibility: hidden;
+        margin: 0;
+        padding: 0;
+      }
+
+      .sub-item.show {
+        opacity: 1;
+        max-height: 40px;
+        visibility: visible;
+        margin: 0;
+        padding: 4px 0 4px 35px;
+      }
+      .sub-item-academy:nth-child(11) {
+        /* CSE item */
+        color: #ff6b6b !important;
+      }
+      .dropdown {
+        position: relative;
+        display: inline-block;
+        padding-left: 370px;
+        top: 46px;
+        padding-bottom: 0%;
+      }
+
+      /* Hide the checkbox */
+      .dropdown-toggle {
+        display: none;
+      }
+
+      .dropdown-label {
+        background-color: #2d3245;
+        color: white;
+        padding: 8px 12px;
+        font-size: 18px;
+        border-radius: 5px;
+        cursor: pointer;
+        user-select: none;
+        display: inline-block;
+
+        /* box-shadow: 3px 4px 5px #333333; */
+      }
+
+      .dropdown-label:hover {
+        background-color: #2d3245;
+      }
+
+      .dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 400px;
+        background-color: #333;
+        min-width: 160px;
+        border: 1px solid #333;
+        border-radius: 4px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 1;
+      }
+
+      .dropdown-toggle:checked + .dropdown-label + .dropdown-content {
+        max-height: 200px;
+        opacity: 1;
+      }
+
+      .dropdown-content a {
+        display: block;
+        padding: 10px 14px;
+        color: white;
+        text-decoration: none;
+      }
+
+      .dropdown-content a:hover {
+        background-color: #ff6b6b;
+      }
+      .content {
+        margin-left: 260px;
+        padding: 20px;
+        margin-top: 60px;
+      }
+      /* Styles from view_questions.html */
+      .question-card {
+        background-color: black;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        /* box-shadow: 0px 0px 10px gray; */
+        transition: all 0.3s ease;
+        overflow: hidden;
+        width: 95%;
+        margin-left: 80px;
+        margin-top: 0%;
+        background-color: rgb(23, 31, 31);
+      }
+      .question-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 5px 15px grey;
+      }
+      .question-header {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        border-bottom: 1px solid #333;
+      }
+      .question-title {
+        color: white;
+        font-size: 20px;
+        margin: 0;
+        flex-grow: 1;
+      }
+      .question-text {
+        color: white;
+        font-size: 26px;
+        margin: 0;
+        padding: 20px;
+        font-weight: 600;
+      }
+      .question-tag {
+        background-color: #ff914d;
+        color: black;
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: 14px;
+        margin: 0 15px;
+        font-weight: 600;
+      }
+      .question-content {
+        display: none;
+        padding: 20px;
+        color: black;
+        font-size: 20px;
+        font-weight:600 ;
+      }
+      .question-content.expanded {
+        display: block;
+      }
+      .code-block {
+        background-color: #ff914d;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+        overflow-x: auto;
+      }
+      .code-block pre {
+        margin: 0;
+        white-space: pre-wrap;
+      }
+      .answers-section {
+        margin-top: 20px;
+        border-top: 1px solid #333;
+        padding-top: 20px;
+      }
+      .answer-form {
+        margin-top: 20px;
+        background-color: #333;
+        padding: 20px;
+        border-radius: 5px;
+      }
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #444;
+        color: black;
+        border: none;
+        border-radius: 5px;
+        min-height: 100px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+      }
+      .submit-btn {
+        background-color: #ff914d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .submit-btn:hover {
+        background-color: #e67e22;
+      }
+      .answer-card {
+        background-color: #333;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+        color: white;
+      }
+      .timestamp {
+        color: white;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .label-container {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+      }
+      .toggle-btn {
+        padding: 5px 10px;
+        font-size: 14px;
+        background: #ff914d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+      }
+      .toggle-btn:hover {
+        background: #e67e22;
+      }
+      .code-editor-container {
+        margin-top: 10px;
+      }
+      .CodeMirror {
+        height: 150px;
+        border-radius: 5px;
+        background: #333;
+        color: white;
+        font-size: 14px;
+        border: 1px solid #444;
+      }
+      .expand-icon {
+        font-size: 24px;
+        color: #ff914d;
+        transition: transform 0.3s ease;
+      }
+      .expand-icon.expanded {
+        transform: rotate(180deg);
+      }
+      .response-count {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #ff914d;
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        background-color: rgba(255, 145, 77, 0.1);
+        margin-right: 10px;
+      }
+      .response-count i {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <body>
+        <body>
+            <div class="navbar">
+              <div class="left-section">
+                <div class="logo">SIES DISCUSSION</div>
+                <ul>
+                  <li><a href="#">Forum Rules</a></li>
+                  <li><a href="#">How to ask</a></li>
+                  <li><a href="#">Formatting Posts</a></li>
+                </ul>
+              </div>
+              <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search discussions..." />
+              </div>
+              <div class="user-info">
+                <i class="fas fa-bell" id="bell"></i>
+                <i class="fas fa-user-circle"></i>
+                <span id="username-display"></span>
+              </div>
+            </div>
+            <div class="header-banner">
+                <div class="banner-title">
+                  <i class="fas fa-desktop" id="fa-desktop"></i>
+                  <span>Programming</span>
+                </div>
+          
+                <p>All programming-related queries fall in this tag.</p>
+              </div>
+        <nav class="sidebar">
+         
+            <button class="start-discussion">Start a Discussion</button>
+         
+            <button class="follow-btn"><i class="fas fa-star"></i> Follow</button>
+            
+            <div class="nav-items">
+                <a href="#" class="nav-item active"><i class="far fa-comments"></i> All Discussions</a>
+                <a href="#" class="nav-item"><i class="far fa-address-book"></i> User Directory</a>
+                <a href="#" class="nav-item"><i class="fas fa-map"></i> Private Discussions</a>
+                <a href="#" class="nav-item"><i class="fas fa-star"></i> Following</a>
+                <a href="tags.html" class="nav-item"><i class="fas fa-tags"></i> Tags</a>
+                
+                <!-- Update the Academy section in nav-items -->
+                <a href="#" class="nav-item category-academy"><i class="fas fa-school"></i> Academy</a>
+                <a href="#" class="nav-item sub-item-academy"><i class="fas fa-laptop"></i> CE</a>
+                <a href="#" class="nav-item sub-item-academy"><i class="fas fa-laptop-code"></i> IT</a>
+                <!-- <a href="#" class="nav-item sub-item-academy"><i class="fas fa-laptop-code"></i> IOT</a> -->
+                <a href="#" class="nav-item sub-item-academy"><i class="fas fa-broadcast-tower"></i> EXTC</a>
+                         <a href="#" class="nav-item sub-item-academy"><i class="fas fa-cube"></i> IoT</a>
+                <!-- <a href="#" class="nav-item"><i class="fas fa-university"></i> Requests</a> -->
+                <a href="#" class="nav-item category-computers"><i class="fas fa-laptop"></i> Computers</a>
+                <a href="#" class="nav-item sub-item"><i class="fas fa-code"></i> Programming</a>
+                <a href="#" class="nav-item sub-item"><i class="fas fa-shield-alt"></i> Security</a>
+                <a href="#" class="nav-item sub-item"><i class="fas fa-book"></i> LAHTP</a>
+                
+                <a href="#" class="nav-item"><i class="fas fa-microchip"></i> Electronics and IoT</a>
+                <a href="#" class="nav-item"><i class="fas fa-comments"></i> General</a>
+                <!-- <a href="#" class="nav-item"><i class="fas fa-question-circle"></i> Meta</a>
+                <a href="#" class="nav-item"><i class="fas fa-box"></i> Sandbox</a> -->
+                <a href="#" class="nav-item"><i class="fas fa-hands-helping"></i> Help</a>
+                <!-- <a href="#" class="nav-item"><i class="fas fa-users"></i> Peer Support</a> -->
+                <a href="#" class="nav-item"><i class="fas fa-clock"></i> Unanswered</a>
+            </div>
+        </nav> 
+        <div class="dropdown">
+            <input type="checkbox" id="toggle" class="dropdown-toggle" />
+            <label for="toggle" class="dropdown-label">Latest ▼</label>
+            <div class="dropdown-content">
+              <a href="#">Newest Messages</a>
+              <a href="#">Oldest Messages</a>
+            </div>
+          </div>
+          <div class="content">
+            <div class="container">
+              <!-- <h1>Discussion Forum</h1> -->
+              <div id="questions-container"></div>
+            </div>
+          </div>
+    <script>
+      
+      const socket = io("http://localhost:3000");
+      let codeEditors = {};
+      const username = localStorage.getItem("username");
+      const computersLink = document.querySelector('.category-computers');
+        const subItems = document.querySelectorAll('.sub-item');
+    
+        computersLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            subItems.forEach(item => {
+                item.classList.toggle('show');
+            });
+        });
+    
+        const startDiscussionButton = document.querySelector(".start-discussion");
+
+// Add a click event listener to redirect to the desired page
+    startDiscussionButton.addEventListener("click", () => {
+    window.location.href = "ask_a_ques.html"; // Set the desired href
+      });
+          
+        // Add this to your existing script
+        const academyLink = document.querySelector('.category-academy');
+        const academySubItems = document.querySelectorAll('.sub-item-academy');
+        
+        academyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            academySubItems.forEach(item => {
+                item.classList.toggle('show');
+            });
+        });
+
+      if (username) {
+        // Remove @gmail.com and all numbers
+        const cleanedUsername = username
+          .replace(/@gmail\.com/i, "") // remove @gmail.com
+          .replace(/[0-9]/g, ""); // remove digits
+
+        // Display the cleaned username
+        document.getElementById("username-display").textContent =
+          cleanedUsername;
+      } else {
+        document.getElementById("username-display").textContent = "Guest";
+      }
+      function createQuestionCard(question) {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        const answerCount = question.answers ? question.answers.length : 0;
+        card.innerHTML = `
+                <div class="question-header">
+                    <h2 class="question-title">${question.title}</h2>
+                    <div class="question-tag">${question.tag}</div>
+                    <div class="response-count">
+                        <i class="fas fa-comments"></i>
+                        ${answerCount}
+                    </div>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="question-content">
+                    <div class="question-text">${question.question}</div>
+                    ${
+                      question.code
+                        ? `<div class="code-block"><pre><code>${question.code}</code></pre></div>`
+                        : ""
+                    }
+                    <div class="answers-section">
+                        <h3>Answers (${answerCount})</h3>
+                        <div id="answers-${question._id}"></div>
+                        <div class="answer-form">
+                            <textarea id="answer-text-${
+                              question._id
+                            }" placeholder="Your answer..."></textarea>
+                            <div class="label-container">
+                                <label>Code (Optional)</label>
+                                <button type="button" class="toggle-btn" onclick="toggleCodeEditor('${
+                                  question._id
+                                }')">+</button>
+                            </div>
+                            <div class="code-editor-container" id="code-editor-${
+                              question._id
+                            }" style="display: none;">
+                                <textarea id="answer-code-${
+                                  question._id
+                                }"></textarea>
+                            </div>
+                            <button class="submit-btn" onclick="submitAnswer('${
+                              question._id
+                            }')">Submit Answer</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        const header = card.querySelector(".question-header");
+        header.addEventListener("click", (e) => {
+          if (e.target.closest(".answer-form")) return;
+          const content = card.querySelector(".question-content");
+          const icon = card.querySelector(".expand-icon");
+          content.classList.toggle("expanded");
+          icon.classList.toggle("expanded");
+        });
+
+        return card;
+      }
+
+      function toggleCodeEditor(questionId) {
+        event.stopPropagation();
+        const editorContainer = document.getElementById(
+          `code-editor-${questionId}`
+        );
+        editorContainer.style.display =
+          editorContainer.style.display === "block" ? "none" : "block";
+
+        if (!codeEditors[questionId]) {
+          codeEditors[questionId] = CodeMirror.fromTextArea(
+            document.getElementById(`answer-code-${questionId}`),
+            { mode: "javascript", theme: "default", lineNumbers: true }
+          );
+        }
+      }
+
+      function submitAnswer(questionId) {
+        event.stopPropagation();
+        const answerText = document.getElementById(
+          `answer-text-${questionId}`
+        ).value;
+        const answerCode = codeEditors[questionId]
+          ? codeEditors[questionId].getValue()
+          : "";
+
+        if (answerText) {
+          socket.emit("submitAnswer", {
+            questionId: questionId,
+            answer: answerText,
+            code: answerCode,
+          });
+
+          document.getElementById(`answer-text-${questionId}`).value = "";
+          if (codeEditors[questionId]) {
+            codeEditors[questionId].setValue("");
+          }
+        }
+      }
+
+      socket.on("connect", () => {
+        console.log("Connected to server");
+        socket.emit("getQuestions");
+      });
+
+      socket.on("questionsList", (questions) => {
+        const container = document.getElementById("questions-container");
+        container.innerHTML = "";
+        questions.forEach((question) => {
+          container.appendChild(createQuestionCard(question));
+          const answersContainer = document.getElementById(
+            `answers-${question._id}`
+          );
+          question.answers.forEach((answer) => {
+            const answerElement = document.createElement("div");
+            answerElement.className = "answer-card";
+            answerElement.innerHTML = `
+                        <div>${answer.text}</div>
+                        ${
+                          answer.code
+                            ? `<div class="code-block"><pre><code>${answer.code}</code></pre></div>`
+                            : ""
+                        }
+                        <div class="timestamp">${new Date(
+                          answer.timestamp
+                        ).toLocaleString()}</div>
+                    `;
+            answersContainer.appendChild(answerElement);
+          });
+        });
+      });
+
+      socket.on("newAnswer", (data) => {
+        const answersContainer = document.getElementById(
+          `answers-${data.questionId}`
+        );
+        const answerElement = document.createElement("div");
+        answerElement.className = "answer-card";
+        answerElement.innerHTML = `
+                <div>${data.answer.text}</div>
+                ${
+                  data.answer.code
+                    ? `<div class="code-block"><pre><code>${data.answer.code}</code></pre></div>`
+                    : ""
+                }
+                <div class="timestamp">${new Date(
+                  data.answer.timestamp
+                ).toLocaleString()}</div>
+            `;
+        answersContainer.appendChild(answerElement);
+      });
+    </script>
+  </body>
+</html>
