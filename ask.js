@@ -28,8 +28,8 @@ async function testConnection() {
     console.log("Successfully connected to MySQL database");
     connection.release();
     return true;
-  } catch (error) {
-    console.error("Error connecting to MySQL database:", error);
+} catch (error) {
+console.error("Error connecting to MySQL database:", error);
     return false;
   }
 }
@@ -74,8 +74,8 @@ io.on("connection", (socket) => {
       });
 
       callback(questionId);
-    } catch (error) {
-      console.error("Error saving question:", error);
+} catch (error) {
+console.error("Error saving question:", error);
       callback(null);
     } finally {
       if (connection) connection.release();
@@ -109,8 +109,8 @@ io.on("connection", (socket) => {
           timestamp: answer[0].timestamp,
         },
       });
-    } catch (error) {
-      console.error("Error saving answer:", error);
+} catch (error) {
+console.error("Error saving answer:", error);
     } finally {
       if (connection) connection.release();
     }
@@ -154,8 +154,8 @@ io.on("connection", (socket) => {
       }));
 
       socket.emit("questionsList", processedQuestions);
-    } catch (error) {
-      console.error("Error fetching questions:", error);
+} catch (error) {
+console.error("Error fetching questions:", error);
       socket.emit("questionsList", []);
     } finally {
       if (connection) connection.release();
@@ -172,7 +172,7 @@ async function startServer() {
   try {
     const isConnected = await testConnection();
     if (!isConnected) {
-      console.error(
+console.error(
         "Failed to connect to database. Please check your MySQL configuration."
       );
       process.exit(1);
@@ -182,8 +182,8 @@ async function startServer() {
     http.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-  } catch (error) {
-    console.error("Failed to start server:", error);
+} catch (error) {
+console.error("Failed to start server:", error);
     process.exit(1);
   }
 }
