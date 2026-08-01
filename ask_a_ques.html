@@ -100,7 +100,7 @@
   <body>
     <div class="discussion-container">
       <h2>Start a Discussion</h2>
-      <form id="discussionForm">
+<form id="discussionForm">
         <label for="discussionTitle">Title</label>
         <input type="text" id="discussionTitle" name="title" required />
 
@@ -118,16 +118,16 @@
 
         <div class="label-container">
           <label for="discussionCode">Code Segment (Optional)</label>
-          <button type="button" class="toggle-btn" onclick="toggleCodeEditor()">
+<button type="button" class="toggle-btn" aria-label="Toggle Code Editor" onclick="toggleCodeEditor()">
             +
-          </button>
+<button aria-label='Submit'>Submit</button>
         </div>
         <div class="code-editor-container" id="codeEditorContainer">
           <textarea id="discussionCode" name="code"></textarea>
         </div>
 
-        <button type="submit" class="submit-btn">Submit</button>
-      </form>
+<button type="submit" class="submit-btn">Submit</button>
+</form>
     </div>
 
     <script>
@@ -163,7 +163,7 @@
                 if (questionId) {
                   window.location.href = `inside2.html?id=${questionId}`;
                 } else {
-                  alert("Failed to submit the question. Please try again.");
+alert("Failed to submit the question. Please try again.");
                 }
               }
             );
