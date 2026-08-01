@@ -28,8 +28,8 @@ async function testConnection() {
     console.log("Successfully connected to MySQL database");
     connection.release();
     return true;
-  } catch (error) {
-    console.error("Error connecting to MySQL database:", error);
+} catch (error) { const errorMessage = 'An error occurred. Please try again.'; const errorId = 'error-message'; document.getElementById('error-container').innerHTML = `<p id='${errorId}' role='alert' aria-describedby='${errorId}-description'>${errorMessage}</p><p id='${errorId}-description'>Error details: ${error.message}</p>`; }
+const errorId = 'database-connection-error'; console.error('Error connecting to MySQL database:', error); document.getElementById('errorMessage').innerHTML = 'Failed to connect to database. Please try again later.'; document.getElementById('errorMessage').setAttribute('aria-describedby', errorId); document.getElementById('errorDescription').innerHTML = 'MySQL database connection error. If issue persists, contact support.'; document.getElementById('errorDescription').setAttribute('id', errorId);
     return false;
   }
 }
@@ -74,8 +74,8 @@ io.on("connection", (socket) => {
       });
 
       callback(questionId);
-    } catch (error) {
-      console.error("Error saving question:", error);
+} catch (error) { const errorMessage = 'An error occurred. Please try again.'; const errorId = 'error-message'; document.getElementById('error-container').innerHTML = `<p id=${errorId}>${errorMessage}</p>`; document.getElementById('error-container').setAttribute('aria-describedby', errorId);
+console.error("Error saving question:", error); document.getElementById('error-message').innerHTML = 'Error saving question: ' + error.message; document.getElementById('error-message').setAttribute('role', 'alert'); document.getElementById('error-message').setAttribute('aria-describedby', 'error-description'); document.getElementById('error-description').innerHTML = 'Please try again or contact support.';
       callback(null);
     } finally {
       if (connection) connection.release();
@@ -109,8 +109,8 @@ io.on("connection", (socket) => {
           timestamp: answer[0].timestamp,
         },
       });
-    } catch (error) {
-      console.error("Error saving answer:", error);
+} catch (error) { const errorMessage = 'An error occurred. Please try again.'; const errorDescription = 'Error details: ' + error.message; const errorElement = document.getElementById('error-message'); errorElement.innerText = errorMessage; errorElement.setAttribute('aria-describedby', 'error-description'); const errorDescriptionElement = document.getElementById('error-description'); errorDescriptionElement.innerText = errorDescription;}
+console.error("Error saving answer:", error); const errorMessage = 'Error saving answer: ' + error.message; const errorElement = document.createElement('div'); errorElement.setAttribute('role', 'alert'); errorElement.setAttribute('aria-describedby', 'error-message'); errorElement.innerHTML = errorMessage; document.body.appendChild(errorElement); const errorDescription = document.createElement('div'); errorDescription.id = 'error-message'; errorDescription.innerHTML = 'Please try again or contact support if the issue persists.'; document.body.appendChild(errorDescription);
     } finally {
       if (connection) connection.release();
     }
@@ -154,8 +154,8 @@ io.on("connection", (socket) => {
       }));
 
       socket.emit("questionsList", processedQuestions);
-    } catch (error) {
-      console.error("Error fetching questions:", error);
+} catch (error) { const errorElement = document.getElementById('error-message'); errorElement.innerHTML = 'An error occurred: ' + error.message; errorElement.setAttribute('aria-live', 'assertive'); errorElement.setAttribute('role', 'alert'); }
+console.error('Error fetching questions:', error); document.getElementById('error-message').innerHTML = 'Error fetching questions:'; document.getElementById('error-message').setAttribute('aria-describedby', 'error-description'); document.getElementById('error-description').innerHTML = error.message;
       socket.emit("questionsList", []);
     } finally {
       if (connection) connection.release();
@@ -172,7 +172,7 @@ async function startServer() {
   try {
     const isConnected = await testConnection();
     if (!isConnected) {
-      console.error(
+console.error('Error: ', error); const errorElement = document.getElementById('error-message'); errorElement.innerHTML = 'An error occurred. Please try again.'; errorElement.setAttribute('aria-describedby', 'error-description'); const errorDescriptionElement = document.getElementById('error-description'); errorDescriptionElement.innerHTML = 'Error details: ' + error.message;
         "Failed to connect to database. Please check your MySQL configuration."
       );
       process.exit(1);
@@ -182,8 +182,8 @@ async function startServer() {
     http.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
-  } catch (error) {
-    console.error("Failed to start server:", error);
+} catch (error) {
+console.error("Failed to start server:", error);
     process.exit(1);
   }
 }
