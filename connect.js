@@ -37,7 +37,7 @@ const con = mysql.createConnection({
 
 con.connect((err) => {
   if (err) {
-    console.error("Database connection failed:", err.stack);
+console.error("Database connection failed:", err.stack);
     return;
   }
   console.log("Connected to database.");
@@ -67,14 +67,14 @@ app.post("/signup.html", (req, res) => {
 
   bcrypt.hash(password, saltRounds, (err, hash) => {
     if (err) {
-      console.error("Hashing error:", err);
-      return res.status(500).send("Hashing error");
+console.error("Hashing error:", err);
+return res.status(500).send("Hashing error");
     }
 
     const sql = "INSERT INTO auth (name, username, password) VALUES (?, ?, ?)";
     con.query(sql, [name, username, hash], (err, result) => {
       if (err) {
-        console.error("Insert failed:", err);
+console.error("Insert failed:", err);
         return res.status(500).send("Database insert failed");
       }
       console.log("1 record inserted:", result.insertId);
@@ -94,8 +94,8 @@ app.post("/login.html", (req, res) => {
   const sql = "SELECT * FROM auth WHERE username = ?";
   con.query(sql, [username], (err, results) => {
     if (err) {
-      console.error("Database error:", err);
-      return res.status(500).send("Database error");
+console.error("Database error:", err);
+return res.status(500).send("Database error");
     }
 
     if (results.length === 0) {
@@ -107,7 +107,7 @@ app.post("/login.html", (req, res) => {
     // Compare password
     bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) {
-        console.error("Password comparison error:", err);
+console.error("Password comparison error:", err);
         return res.status(500).send("Error checking password");
       }
 
@@ -131,10 +131,10 @@ app.post("/login.html", (req, res) => {
 
       transporter.sendMail(mailOptions, (err, info) => {
         if (err) {
-          console.error("Failed to send OTP:", err);
+console.error("Failed to send OTP:", err);
           return res
             .status(500)
-            .json({ success: false, message: "Failed to send OTP." });
+.json({ success: false, message: "Failed to send OTP." });
         }
         res.redirect("/verify-otp.html");
       });
@@ -164,7 +164,7 @@ app.post("/verify-otp.html", (req, res) => {
     console.log(
       `Invalid OTP for ${username}. Expected: ${otpStore[username]}, Received: ${otp}`
     );
-    return res.status(401).json({ success: false, message: "Invalid OTP." });
+return res.status(401).json({ success: false, message: "Invalid OTP." });
   }
 });
 // Generate OTP
